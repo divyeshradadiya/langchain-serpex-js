@@ -1,6 +1,6 @@
 {
   "name": "langchain-serpex-js",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "LangChain integration for SERPEX search API (JavaScript/TypeScript)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "homepage": "https://docs.langchain.com/oss/js/integrations/providers/serpex",
   "dependencies": {
-    "@langchain/core": "^0.3.0"
+    "@langchain/core": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -35,6 +35,6 @@
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "@langchain/core": "^0.3.0"
+    "@langchain/core": "^1.0.0"
   }
 }

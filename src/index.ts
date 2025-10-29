@@ -121,10 +121,21 @@ export class Serpex extends Tool {
 
   /**
    * Converts the Serpex instance to JSON
-   * @returns Throws an error (not implemented)
+   * @returns Serialized representation
    */
-  toJSON() {
-    return this.toJSONNotImplemented();
+  toJSON(): any {
+    return {
+      lc: 1,
+      type: "not_implemented",
+      id: ["langchain-serpex-js", "Serpex"],
+      kwargs: {
+        name: this.name,
+        description: this.description,
+        apiKey: "[REDACTED]",
+        params: this.params,
+        baseURL: this.baseURL,
+      },
+    };
   }
 
   /**
