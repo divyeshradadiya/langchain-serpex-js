@@ -1,6 +1,6 @@
 {
   "name": "langchain-serpex-js",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "LangChain integration for SERPEX search API (JavaScript/TypeScript)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
