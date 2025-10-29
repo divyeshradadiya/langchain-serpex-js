@@ -170,7 +170,7 @@ export class Serpex extends Tool {
         );
       }
 
-      const json = await response.json();
+      const json = await response.json() as any;
 
       if (json.error) {
         throw new Error(
@@ -235,5 +235,3 @@ export class Serpex extends Tool {
     }
   }
 }
-
-export { Serpex };
