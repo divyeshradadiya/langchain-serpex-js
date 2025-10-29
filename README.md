@@ -1,6 +1,6 @@
 # langchain-serpex-js
 
-[![npm version](https://badge.fury.io/js/langchain-serpex-js.svg)](https://badge.fury.io/js/langchain-serpex-js)
+[![npm version](https://img.shields.io/npm/v/langchain-serpex-js)](https://www.npmjs.com/package/langchain-serpex-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 LangChain integration for SERPEX search API (JavaScript/TypeScript).
