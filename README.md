@@ -27,7 +27,7 @@ SERPEX is a powerful multi-engine search API that provides access to search resu
 
 ### Get Your API Key
 
-Sign up at [SERPEX](https://serpex.io) to get your API key.
+Sign up at [SERPEX](https://serpex.dev) to get your API key.
 
 ### Basic Usage
 
@@ -115,13 +115,13 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 
 For more detailed documentation, visit:
 - [LangChain Documentation](https://js.langchain.com)
-- [SERPEX API Documentation](https://serpex.io/docs)
+- - [SERPEX API Documentation](https://serpex.dev/docs)
 
 ## Support
 
 For issues and questions:
 - GitHub Issues: [langchain-serpex-js issues](https://github.com/divyeshradadiya/langchain-serpex-js/issues)
-- SERPEX Support: [support@serpex.io](mailto:support@serpex.io)
+- - SERPEX Support: [support@serpex.dev](mailto:support@serpex.dev)
 
 ## License
 

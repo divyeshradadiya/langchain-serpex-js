@@ -23,14 +23,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        # Use `npm install` when package-lock.json is not present in the repository.
-        # `npm ci` requires a lockfile; CI will fail with EUSAGE if no lockfile exists.
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install --no-audit --prefer-offline
-          fi
+        run: npm ci
 
       - name: Build package
         run: npm run build
