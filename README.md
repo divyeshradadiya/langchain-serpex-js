@@ -54,8 +54,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 // Initialize the search tool
 const searchTool = new Serpex('your-serpex-api-key', {
-  engine: 'google',
-  num_results: 5
+  engine: 'google'
 });
 
 // Initialize the LLM
