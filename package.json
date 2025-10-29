@@ -1,0 +1,40 @@
+{
+  "name": "langchain-serpex-js",
+  "version": "0.1.0",
+  "description": "LangChain integration for SERPEX search API (JavaScript/TypeScript)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "langchain",
+    "serpex",
+    "search",
+    "api",
+    "google",
+    "bing",
+    "duckduckgo"
+  ],
+  "author": "Serpex Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/divyeshradadiya/langchain-serpex-js.git"
+  },
+  "homepage": "https://docs.langchain.com/oss/js/integrations/providers/serpex",
+  "dependencies": {
+    "@langchain/core": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.5.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@langchain/core": "^0.3.0"
+  }
+}
