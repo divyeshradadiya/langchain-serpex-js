@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/langchain-serpex-js)](https://www.npmjs.com/package/langchain-serpex-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-LangChain integration for SERPEX search API (JavaScript/TypeScript).
+LangChain integration for Serpex (JavaScript/TypeScript).
 
 ## Installation
 
@@ -11,17 +11,19 @@ LangChain integration for SERPEX search API (JavaScript/TypeScript).
 npm install langchain-serpex-js
 ```
 
-## What is SERPEX?
+## What is Serpex?
 
-SERPEX is a powerful multi-engine search API that provides access to search results from Google, Bing, DuckDuckGo, Baidu, Yandex, and other search engines in JSON format. It's designed for developers building AI applications, SEO tools, market research platforms, and data aggregation services.
+Serpex is a real-time web search API. It returns structured JSON results
+(title, URL, snippet) for any query, and offers page content extraction that
+turns URLs into LLM-ready markdown. It's built for AI agents, LLM tools and
+RAG pipelines.
 
 ## Features
 
-- **Multi-Engine Support**: Search across Google, Bing, DuckDuckGo, Baidu, and Yandex
-- **Rich Results**: Get organic results, answer boxes, knowledge graphs, news, images, videos, and shopping results
-- **Localization**: Support for location-based and language-specific searches
-- **Real-time Data**: Access to current search results
-- **Easy Integration**: Simple API with comprehensive documentation
+- **Real-time web search**: current results for any query
+- **One search engine**: nothing to configure — no engine to pick
+- **LangChain-native**: drop-in `Tool` for agents and chains
+- **Easy integration**: API key via constructor or `SERPEX_API_KEY`
 
 ## Quick Start
 
@@ -35,9 +37,7 @@ Sign up at [SERPEX](https://serpex.dev) to get your API key.
 import { Serpex } from 'langchain-serpex-js';
 
 // Initialize the tool
-const tool = new Serpex('your-serpex-api-key', {
-  engine: 'google'
-});
+const tool = new Serpex('your-serpex-api-key');
 
 // Perform a search
 const results = await tool.invoke('latest AI developments');
@@ -53,9 +53,7 @@ import { AgentExecutor, createOpenAIFunctionsAgent } from 'langchain/agents';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 // Initialize the search tool
-const searchTool = new Serpex('your-serpex-api-key', {
-  engine: 'google'
-});
+const searchTool = new Serpex('your-serpex-api-key');
 
 // Initialize the LLM
 const llm = new ChatOpenAI({ model: 'gpt-4', temperature: 0 });
@@ -106,7 +104,7 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 ### Parameters
 
 - `apiKey` (string): Your SERPEX API key (required)
-- `engine` (string): Search engine to use - "google", "bing", "duckduckgo", "baidu", "yandex" (default: "google")
+- `engine` (string): **Deprecated** — ignored by the Serpex API since 2026-06 (Serpex is a single search engine). Still accepted so existing code keeps working.
 - `category` (string): Search category - currently only "web" is supported
 - `time_range` (string): Time filter - "all", "day", "week", "month", "year"
 
@@ -114,13 +112,13 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 
 For more detailed documentation, visit:
 - [LangChain Documentation](https://js.langchain.com)
-- - [SERPEX API Documentation](https://serpex.dev/docs)
+- [Serpex API Documentation](https://serpex.dev/docs)
 
 ## Support
 
 For issues and questions:
 - GitHub Issues: [langchain-serpex-js issues](https://github.com/divyeshradadiya/langchain-serpex-js/issues)
-- - SERPEX Support: [support@serpex.dev](mailto:support@serpex.dev)
+- Serpex Support: [support@serpex.dev](mailto:support@serpex.dev)
 
 ## License
 
