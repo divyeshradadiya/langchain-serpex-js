@@ -1,6 +1,7 @@
 name: Publish to npm
 
-# npm Trusted Publishing (OIDC): no NPM_TOKEN, nothing to expire. Publish = push a `v<version>` tag.
+# npm Trusted Publishing (OIDC) — NO registry-url on setup-node: it writes an .npmrc with an
+# empty _authToken, npm then thinks it is authenticated and the OIDC exchange is denied (403): no NPM_TOKEN, nothing to expire. Publish = push a `v<version>` tag.
 on:
   push:
     tags:
@@ -23,7 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: |
