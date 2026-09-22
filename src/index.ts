@@ -4,8 +4,7 @@ import { Tool } from "@langchain/core/tools";
 /**
  * SERPEX API Parameters
  *
- * SERPEX provides multi-engine web search results in JSON format.
- * Supports Google, Bing, DuckDuckGo, Brave, Yahoo, and Yandex search engines.
+ * Serpex is a real-time web search API that returns results as JSON.
  *
  * For detailed documentation, visit: https://serpex.dev/docs
  */
@@ -16,9 +15,8 @@ export interface SerpexParameters {
   q: string;
 
   /**
-   * Search engine to use
-   * Options: "auto", "google", "bing", "duckduckgo", "brave", "yahoo", "yandex"
-   * Default: "auto" (automatically routes to best available engine)
+   * @deprecated Ignored by the Serpex API since 2026-06 — Serpex is a single
+   * search engine. Still accepted so existing code keeps working.
    */
   engine?: string;
 
@@ -33,7 +31,6 @@ export interface SerpexParameters {
   /**
    * Time range filter for results
    * Options: "all", "day", "week", "month", "year"
-   * Note: Not supported by Brave engine
    */
   time_range?: string;
 }
@@ -41,8 +38,7 @@ export interface SerpexParameters {
 /**
  * Serpex Class
  *
- * A tool for searching the web using the SERPEX API, which provides
- * multi-engine search results from Google, Bing, DuckDuckGo, Brave, Yahoo, and Yandex.
+ * A LangChain tool for real-time web search with Serpex.
  *
  * Requires SERPEX_API_KEY environment variable or passed as parameter.
  * Get your API key at: https://serpex.dev
@@ -50,7 +46,6 @@ export interface SerpexParameters {
  * @example
  * ```typescript
  * const serpex = new Serpex("your-api-key", {
- *   engine: "auto",
  *   category: "web",
  *   time_range: "day"
  * });
@@ -88,7 +83,7 @@ export class Serpex extends Tool {
   name = "serpex_search";
 
   description =
-    "A powerful multi-engine web search tool. Useful for answering questions about current events, finding information from the web, and getting real-time data. Input should be a search query string. Supports automatic routing with retry logic and multiple search engines (Google, Bing, DuckDuckGo, Brave, Yahoo, Yandex).";
+    "A real-time web search tool. Useful for answering questions about current events, finding information from the web, and getting real-time data. Input should be a search query string.";
 
   protected apiKey: string;
 

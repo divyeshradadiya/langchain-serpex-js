@@ -1,22 +1,24 @@
 {
   "name": "langchain-serpex-js",
-  "version": "0.1.4",
-  "description": "LangChain integration for SERPEX search API (JavaScript/TypeScript)",
+  "version": "0.1.5",
+  "description": "LangChain integration for Serpex, a real-time web search API (JavaScript/TypeScript)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "node --test test/serpex.test.cjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
     "langchain",
     "serpex",
     "search",
-    "api",
-    "google",
-    "bing",
-    "duckduckgo"
+    "search api",
+    "web search",
+    "real-time search",
+    "ai agents",
+    "llm",
+    "rag"
   ],
   "author": "Serpex Team",
   "license": "MIT",
