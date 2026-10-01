@@ -1,10 +1,24 @@
 import { getEnvironmentVariable } from "@langchain/core/utils/env";
 import { Tool } from "@langchain/core/tools";
 
+/** Package version, sent as the User-Agent (langchain-serpex-js/<version>). */
+export const VERSION = "0.2.0";
+
+// Client timeouts above the server's own budget for each call (search 30 s
+// upstream, 45 s with include_content), so the tool never gives up on a
+// request the server still finishes and bills.
+const SEARCH_TIMEOUT_MS = 60_000;
+const SEARCH_CONTENT_TIMEOUT_MS = 100_000;
+
+// Accepted for backward compatibility, ignored by the Serpex API, never sent.
+const DEPRECATED_PARAMS = ["engine", "engines", "category", "time_range"] as const;
+
+let deprecationWarned = false;
+
 /**
  * SERPEX API Parameters
  *
- * Serpex is a real-time web search API that returns results as JSON.
+ * Serpex is the web search API and extract API for AI agents.
  *
  * For detailed documentation, visit: https://serpex.dev/docs
  */
@@ -15,22 +29,41 @@ export interface SerpexParameters {
   q: string;
 
   /**
-   * @deprecated Ignored by the Serpex API since 2026-06 — Serpex is a single
-   * search engine. Still accepted so existing code keeps working.
+   * Also fetch page content (markdown) for the top results. Best-effort: a
+   * page that cannot be extracted carries `content_error` instead.
+   * Default: false.
+   */
+  include_content?: boolean;
+
+  /**
+   * How many top results get content when `include_content` is true: 5 or 10.
+   * Default: 5.
+   */
+  content_results?: 5 | 10;
+
+  /**
+   * Request timeout in milliseconds. Default: 60000, or 100000 with
+   * `include_content`.
+   */
+  timeout?: number;
+
+  /**
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
    */
   engine?: string;
 
   /**
-   * Search category
-   * Currently only "web" is supported
-   * More categories (images, videos, news) coming soon
-   * Default: "web"
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
+   */
+  engines?: string | string[];
+
+  /**
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
    */
   category?: string;
 
   /**
-   * Time range filter for results
-   * Options: "all", "day", "week", "month", "year"
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
    */
   time_range?: string;
 }
@@ -38,7 +71,7 @@ export interface SerpexParameters {
 /**
  * Serpex Class
  *
- * A LangChain tool for real-time web search with Serpex.
+ * A LangChain tool for web search with Serpex.
  *
  * Requires SERPEX_API_KEY environment variable or passed as parameter.
  * Get your API key at: https://serpex.dev
@@ -46,8 +79,8 @@ export interface SerpexParameters {
  * @example
  * ```typescript
  * const serpex = new Serpex("your-api-key", {
- *   category: "web",
- *   time_range: "day"
+ *   include_content: true, // page content (markdown) for the top results
+ *   content_results: 5,
  * });
  *
  * const agent = RunnableSequence.from([
@@ -83,7 +116,7 @@ export class Serpex extends Tool {
   name = "serpex_search";
 
   description =
-    "A real-time web search tool. Useful for answering questions about current events, finding information from the web, and getting real-time data. Input should be a search query string.";
+    "A web search tool. Useful for answering questions about current events and finding information from the web. Input should be a search query string.";
 
   protected apiKey: string;
 
@@ -106,6 +139,24 @@ export class Serpex extends Tool {
     if (!apiKey) {
       throw new Error(
         "SERPEX API key is required. Set it as SERPEX_API_KEY in your environment variables, or pass it to the Serpex constructor."
+      );
+    }
+
+    if (
+      params.content_results !== undefined &&
+      params.content_results !== 5 &&
+      params.content_results !== 10
+    ) {
+      throw new Error("content_results must be 5 or 10");
+    }
+
+    const passed = DEPRECATED_PARAMS.filter(
+      (key) => params[key] !== undefined && params[key] !== null
+    );
+    if (passed.length > 0 && !deprecationWarned) {
+      deprecationWarned = true;
+      console.warn(
+        `[langchain-serpex-js] ${passed.join(", ")} ${passed.length === 1 ? "is" : "are"} deprecated and ignored by the Serpex API; the value is not sent. It will be removed in 0.3.0.`
       );
     }
 
@@ -139,16 +190,12 @@ export class Serpex extends Tool {
    * @returns Complete API URL with parameters
    */
   protected buildUrl(searchQuery: string): string {
-    const preparedParams: [string, string][] = Object.entries({
-      engine: "auto",
-      category: "web",
-      ...this.params,
-      q: searchQuery,
-    })
-      .filter(([key, value]) => value !== undefined && value !== null)
-      .map(([key, value]) => [key, `${value}`]);
-
-    const searchParams = new URLSearchParams(preparedParams);
+    // Only q, include_content and content_results reach the API.
+    const searchParams = new URLSearchParams({ q: searchQuery });
+    if (this.params.include_content) {
+      searchParams.set("include_content", "true");
+      searchParams.set("content_results", String(this.params.content_results ?? 5));
+    }
     return `${this.baseURL}/api/search?${searchParams}`;
   }
 
@@ -161,12 +208,17 @@ export class Serpex extends Tool {
     try {
       const url = this.buildUrl(input);
 
+      const timeout =
+        this.params.timeout ??
+        (this.params.include_content ? SEARCH_CONTENT_TIMEOUT_MS : SEARCH_TIMEOUT_MS);
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
+          "User-Agent": `langchain-serpex-js/${VERSION}`,
         },
+        signal: AbortSignal.timeout(timeout),
       });
 
       if (!response.ok) {
@@ -184,26 +236,8 @@ export class Serpex extends Tool {
         );
       }
 
-      // Process response based on actual Serpex API format
-      // Response structure: { metadata, id, query, engines, results, answers, corrections, infoboxes, suggestions }
-
-      // Instant answers (from knowledge panels/answer boxes)
-      if (json.answers && Array.isArray(json.answers) && json.answers.length > 0) {
-        const answer = json.answers[0];
-        if (answer.answer || answer.snippet) {
-          return answer.answer || answer.snippet;
-        }
-      }
-
-      // Infoboxes (knowledge panels)
-      if (json.infoboxes && Array.isArray(json.infoboxes) && json.infoboxes.length > 0) {
-        const infobox = json.infoboxes[0];
-        if (infobox.description) {
-          return infobox.description;
-        }
-      }
-
-      // Organic search results
+      // Response: { id, query, results[], metadata, message? }. `engines` and
+      // results[].engine are deprecated (always "auto") and not read here.
       if (json.results && Array.isArray(json.results) && json.results.length > 0) {
         const snippets = json.results
           .filter((result: any) => result.snippet || result.title)
@@ -212,8 +246,13 @@ export class Serpex extends Tool {
             const title = result.title || "";
             const snippet = result.snippet || "";
             const url = result.url || "";
-            const published = result.published_date ? `\nPublished: ${result.published_date}` : "";
-            return `[${index + 1}] ${title}\nURL: ${url}\n${snippet}${published}`;
+            let text = `[${index + 1}] ${title}\nURL: ${url}\n${snippet}`;
+            if (result.content) {
+              text += `\nContent:\n${result.content}`;
+            } else if (result.content_error) {
+              text += `\nContent unavailable: ${result.content_error}`;
+            }
+            return text;
           });
 
         if (snippets.length > 0) {
@@ -222,17 +261,7 @@ export class Serpex extends Tool {
         }
       }
 
-      // Search suggestions
-      if (json.suggestions && Array.isArray(json.suggestions) && json.suggestions.length > 0) {
-        return `No direct results found. Related searches:\n${json.suggestions.join("\n")}`;
-      }
-
-      // Query corrections
-      if (json.corrections && Array.isArray(json.corrections) && json.corrections.length > 0) {
-        return `Did you mean: ${json.corrections.join(", ")}?`;
-      }
-
-      return "No search results found.";
+      return json.message || "No search results found.";
     } catch (error) {
       if (error instanceof Error) {
         return `Error searching with SERPEX: ${error.message}`;

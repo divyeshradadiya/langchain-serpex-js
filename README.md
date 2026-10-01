@@ -13,14 +13,14 @@ npm install langchain-serpex-js
 
 ## What is Serpex?
 
-Serpex is a real-time web search API. It returns structured JSON results
-(title, URL, snippet) for any query, and offers page content extraction that
-turns URLs into LLM-ready markdown. It's built for AI agents, LLM tools and
-RAG pipelines.
+Serpex is the web search API and extract API for AI agents. Search returns
+ranked web results (title, URL, snippet), optionally with page content as
+markdown; Extract turns known URLs into clean markdown. It's built for AI
+agents, LLM tools and RAG pipelines.
 
 ## Features
 
-- **Real-time web search**: current results for any query
+- **Web search**: ranked results for any query, optionally with page content as markdown
 - **One search engine**: nothing to configure — no engine to pick
 - **LangChain-native**: drop-in `Tool` for agents and chains
 - **Easy integration**: API key via constructor or `SERPEX_API_KEY`
@@ -104,9 +104,10 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 ### Parameters
 
 - `apiKey` (string): Your SERPEX API key (required)
-- `engine` (string): **Deprecated** — ignored by the Serpex API since 2026-06 (Serpex is a single search engine). Still accepted so existing code keeps working.
-- `category` (string): Search category - currently only "web" is supported
-- `time_range` (string): Time filter - "all", "day", "week", "month", "year"
+- `include_content` (boolean): Also fetch page content (markdown) for the top results (default: `false`). Best-effort: a page that can't be extracted shows its `content_error` instead.
+- `content_results` (`5 | 10`): How many top results get content (default: `5`)
+- `timeout` (number): Request timeout in ms (default: 60000, or 100000 with `include_content`)
+- `engine`, `category`, `time_range`: **Deprecated** — ignored by the Serpex API and not sent (a one-time `console.warn` is printed); removed in 0.3.0
 
 ## Documentation
 
