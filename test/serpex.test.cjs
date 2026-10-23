@@ -36,7 +36,7 @@ test("tool name and exports are unchanged", () => {
   const tool = new Serpex("test-key");
   assert.strictEqual(tool.name, "serpex_search");
   assert.strictEqual(Serpex.lc_name(), "Serpex");
-  assert.strictEqual(VERSION, "0.2.1");
+  assert.strictEqual(VERSION, "0.3.0");
 });
 
 test("deprecated options are accepted, warned once, and not sent", async () => {
@@ -65,8 +65,7 @@ test("plain search: only q, GET /api/search, Bearer key, User-Agent from the SDK
   assert.strictEqual(url.pathname, "/api/search");
   assert.deepStrictEqual([...url.searchParams.keys()], ["q"]);
   assert.strictEqual(init.headers.Authorization, "Bearer test-key");
-  // serpex >= 2.11.1 appends this package's token; 2.11.0 sends its own only.
-  assert.match(init.headers["User-Agent"], /^serpex-js\/2\.11\.0$|^serpex-js\/\d+\.\d+\.\d+ langchain-serpex-js\/0\.2\.1$/);
+  assert.match(init.headers["User-Agent"], /^serpex-js\/2\.(1[2-9]|[2-9]\d)\.\d+ langchain-serpex-js\/0\.3\.0$/);
   assert.match(out, /^Found 10 results:\n\n\[1\] /);
   assert.doesNotMatch(out, /Content/);
 });

@@ -108,7 +108,7 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 - `content_results` (`5 | 10`): How many top results get content (default: `5`)
 - `timeout` (number): Request timeout in ms (default: 60000, or 100000 with `include_content`)
 - `baseURL` (third constructor argument, or `SERPEX_BASE_URL`): API base URL (default `https://api.serpex.dev`)
-- `engine`, `engines`, `category`, `time_range`: **Deprecated** — ignored by the Serpex API and not sent (a one-time `console.warn` is printed); removed in 0.3.0. For a date filter put `after:YYYY-MM-DD` / `before:YYYY-MM-DD` in the query.
+- `engine`, `engines`, `category`, `time_range`: **Deprecated** — ignored by the Serpex API and not sent (a one-time `console.warn` is printed); removed in 0.4.0. For a date filter put `after:YYYY-MM-DD` / `before:YYYY-MM-DD` in the query.
 
 The tool sends only `q`, plus `include_content` / `content_results` when page content is on.
 Search operators (`site:`, `-site:`, `after:`, `before:`) go in the query text.
@@ -133,9 +133,9 @@ pages. An empty result is charged only when it was confirmed as genuinely empty.
 
 ## How it calls the API
 
-Through the official [`serpex`](https://www.npmjs.com/package/serpex) SDK, so request
+Through the official [`serpex`](https://www.npmjs.com/package/serpex) SDK (`^2.12.0`), so request
 parameters, timeouts and error parsing follow the SDK. Requests carry
-`User-Agent: serpex-js/<sdk version> langchain-serpex-js/<version>` (serpex >= 2.11.1).
+`User-Agent: serpex-js/<sdk version> langchain-serpex-js/<version>`.
 
 ## Documentation
 

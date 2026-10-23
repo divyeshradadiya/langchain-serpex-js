@@ -1,6 +1,6 @@
 {
   "name": "langchain-serpex-js",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "LangChain integration for Serpex, the web search API and extract API for AI agents (JavaScript/TypeScript)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,7 +33,7 @@
   "homepage": "https://docs.langchain.com/oss/js/integrations/providers/serpex",
   "dependencies": {
     "@langchain/core": "^1.0.0",
-    "serpex": "^2.11.0"
+    "serpex": "^2.12.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

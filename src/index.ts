@@ -6,7 +6,7 @@ import { SerpexClient, SerpApiException } from "serpex";
 import type { SearchParams, SearchResponse, SerpexClientOptions } from "serpex";
 
 /** Package version, sent in the User-Agent (serpex-js/<sdk> langchain-serpex-js/<version>). */
-export const VERSION = "0.2.1";
+export const VERSION = "0.3.0";
 
 // Accepted for backward compatibility, ignored by the Serpex API, never sent.
 const DEPRECATED_PARAMS = ["engine", "engines", "category", "time_range"] as const;
@@ -49,23 +49,23 @@ export interface SerpexParameters {
   timeout?: number;
 
   /**
-   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.4.0.
    */
   engine?: string;
 
   /**
-   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.4.0.
    */
   engines?: string | string[];
 
   /**
-   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.3.0.
+   * @deprecated Ignored by the Serpex API and not sent. Removed in 0.4.0.
    */
   category?: string;
 
   /**
    * @deprecated Ignored by the Serpex API and not sent (date filters go in the
-   * query as `after:YYYY-MM-DD` / `before:YYYY-MM-DD`). Removed in 0.3.0.
+   * query as `after:YYYY-MM-DD` / `before:YYYY-MM-DD`). Removed in 0.4.0.
    */
   time_range?: string;
 }
@@ -214,7 +214,7 @@ export class Serpex extends Tool {
     if (passed.length > 0 && !deprecationWarned) {
       deprecationWarned = true;
       console.warn(
-        `[langchain-serpex-js] ${passed.join(", ")} ${passed.length === 1 ? "is" : "are"} deprecated and ignored by the Serpex API; the value is not sent. It will be removed in 0.3.0.`
+        `[langchain-serpex-js] ${passed.join(", ")} ${passed.length === 1 ? "is" : "are"} deprecated and ignored by the Serpex API; the value is not sent. It will be removed in 0.4.0.`
       );
     }
 
@@ -222,10 +222,9 @@ export class Serpex extends Tool {
     this.params = params;
     this.baseURL = baseURL;
 
-    // `userAgent` (serpex >= 2.11.1) adds this package to the SDK's
-    // User-Agent; older SDKs ignore it. Typed as an intersection so it compiles
-    // against either.
-    const options: SerpexClientOptions & { userAgent?: string } = {
+    // Adds this package to the SDK's User-Agent:
+    // "serpex-js/<sdk> langchain-serpex-js/<version>".
+    const options: SerpexClientOptions = {
       userAgent: `langchain-serpex-js/${VERSION}`,
       ...(params.timeout !== undefined ? { timeoutMs: params.timeout } : {}),
     };
