@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 — 2026-10-23
+
+- Calls the API through the official `serpex` SDK (`^2.11.0`) instead of its own `fetch` code, so parameters, timeouts and error parsing cannot drift from the API. The response is typed (`SearchResponse`) instead of `any`.
+- Errors: one actionable sentence per HTTP status (400, 401 check `SERPEX_API_KEY`, 402 out of credits with the balance, 429 retry after N ms with the plan limit, 5xx temporary and not charged) instead of the raw response body. An object-shaped error body no longer shows as `[object Object]`.
+- `timeout` must be a positive number of milliseconds.
+- The protected `buildUrl()` is replaced by `buildSearchParams()` (the SDK builds the URL).
+- New exported helpers `describeSerpexError()` and `formatSerpexResults()`.
+- `User-Agent: serpex-js/<sdk> langchain-serpex-js/0.2.1` with serpex >= 2.11.1.
+- Published files limited to `dist/`, README and CHANGELOG.
+- Offline tests against recorded API responses (`test/fixtures/`).
+
 ## 0.2.0 — 2026-10-01
 
 - New `include_content` / `content_results` (5 or 10): page content (markdown) for the top results, rendered under each result; failed pages show their `content_error`.

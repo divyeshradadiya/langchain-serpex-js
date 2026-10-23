@@ -21,7 +21,7 @@ agents, LLM tools and RAG pipelines.
 ## Features
 
 - **Web search**: ranked results for any query, optionally with page content as markdown
-- **One search engine**: nothing to configure — no engine to pick
+- **Nothing to configure**: every search is routed automatically
 - **LangChain-native**: drop-in `Tool` for agents and chains
 - **Easy integration**: API key via constructor or `SERPEX_API_KEY`
 
@@ -107,7 +107,35 @@ const tool = new Serpex();  // Will use SERPEX_API_KEY from environment
 - `include_content` (boolean): Also fetch page content (markdown) for the top results (default: `false`). Best-effort: a page that can't be extracted shows its `content_error` instead.
 - `content_results` (`5 | 10`): How many top results get content (default: `5`)
 - `timeout` (number): Request timeout in ms (default: 60000, or 100000 with `include_content`)
-- `engine`, `category`, `time_range`: **Deprecated** — ignored by the Serpex API and not sent (a one-time `console.warn` is printed); removed in 0.3.0
+- `baseURL` (third constructor argument, or `SERPEX_BASE_URL`): API base URL (default `https://api.serpex.dev`)
+- `engine`, `engines`, `category`, `time_range`: **Deprecated** — ignored by the Serpex API and not sent (a one-time `console.warn` is printed); removed in 0.3.0. For a date filter put `after:YYYY-MM-DD` / `before:YYYY-MM-DD` in the query.
+
+The tool sends only `q`, plus `include_content` / `content_results` when page content is on.
+Search operators (`site:`, `-site:`, `after:`, `before:`) go in the query text.
+
+### Output
+
+A numbered list: title, URL and snippet per result, then `Content:` (page markdown) or
+`Content unavailable: <reason>` for the top `content_results` results when `include_content` is
+on. An empty search returns the API's explanation, including whether it was charged.
+
+### Errors
+
+Errors are returned as text the agent can act on (the tool does not throw):
+`Error searching with Serpex: ...` with one sentence per HTTP status — 400 (bad argument), 401
+(check `SERPEX_API_KEY`), 402 (out of credits, with the balance), 429 (rate limit: 5, 25 or 50
+requests per second by plan, with the wait in ms), 5xx (temporary, not charged).
+
+### Credits
+
+1 per search. With `include_content`: 1 when no page came back, 3 for 1-5 pages, 6 for 6-10
+pages. An empty result is charged only when it was confirmed as genuinely empty.
+
+## How it calls the API
+
+Through the official [`serpex`](https://www.npmjs.com/package/serpex) SDK, so request
+parameters, timeouts and error parsing follow the SDK. Requests carry
+`User-Agent: serpex-js/<sdk version> langchain-serpex-js/<version>` (serpex >= 2.11.1).
 
 ## Documentation
 
